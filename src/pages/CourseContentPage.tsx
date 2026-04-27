@@ -242,7 +242,7 @@ function QuestionText({ children }: any) {
 function LessonStep({ step, onReady }: any) {
   useEffect(() => {
     onReady(true);
-  }, [onReady]);
+  }, [onReady, step.id]); // added step.id to dependency array
   return (
     <div
       style={{
@@ -286,7 +286,7 @@ function LessonStep({ step, onReady }: any) {
 function CodeLessonStep({ step, onReady }: any) {
   useEffect(() => {
     onReady(true);
-  }, [onReady]);
+  }, [onReady, step.id]); // added step.id to dependency array
   return (
     <div
       style={{
@@ -1418,13 +1418,13 @@ function CourseContentInner({ onClose }: any) {
     );
   }
 
-  // Inside CourseContentInner component
   const isAutoStep = step.type === "lesson" || step.type === "code_lesson";
   const canCheck = isAutoStep
     ? readyToAdvance
     : checked
       ? true
       : answer !== null;
+
   return (
     <div
       style={{
@@ -1446,14 +1446,24 @@ function CourseContentInner({ onClose }: any) {
           flexDirection: "column",
         }}
       >
+        {/* 
+          FIX: Added key={step.id} to each step component to force remount 
+          when the step changes. This ensures onReady(true) is called again 
+          for consecutive lesson steps.
+        */}
         {step.type === "lesson" && (
-          <LessonStep step={step} onReady={setReadyToAdvance} />
+          <LessonStep key={step.id} step={step} onReady={setReadyToAdvance} />
         )}
         {step.type === "code_lesson" && (
-          <CodeLessonStep step={step} onReady={setReadyToAdvance} />
+          <CodeLessonStep
+            key={step.id}
+            step={step}
+            onReady={setReadyToAdvance}
+          />
         )}
         {step.type === "quiz" && (
           <QuizStepComponent
+            key={step.id}
             step={step}
             onAnswer={setAnswer}
             checked={checked}
@@ -1462,6 +1472,7 @@ function CourseContentInner({ onClose }: any) {
         )}
         {step.type === "quiz_code" && (
           <QuizStepComponent
+            key={step.id}
             step={step}
             onAnswer={setAnswer}
             checked={checked}
@@ -1470,6 +1481,7 @@ function CourseContentInner({ onClose }: any) {
         )}
         {step.type === "true_false" && (
           <TrueFalseStepComponent
+            key={step.id}
             step={step}
             onAnswer={setAnswer}
             checked={checked}
@@ -1478,6 +1490,7 @@ function CourseContentInner({ onClose }: any) {
         )}
         {step.type === "fill_code" && (
           <FillCodeStepComponent
+            key={step.id}
             step={step}
             onAnswer={setAnswer}
             checked={checked}
@@ -1486,6 +1499,7 @@ function CourseContentInner({ onClose }: any) {
         )}
         {step.type === "match" && (
           <MatchStepComponent
+            key={step.id}
             step={step}
             onAnswer={setAnswer}
             checked={checked}
@@ -1494,6 +1508,7 @@ function CourseContentInner({ onClose }: any) {
         )}
         {step.type === "reorder" && (
           <ReorderStepComponent
+            key={step.id}
             step={step}
             onAnswer={setAnswer}
             checked={checked}
@@ -1502,6 +1517,7 @@ function CourseContentInner({ onClose }: any) {
         )}
         {step.type === "short_answer" && (
           <ShortAnswerStepComponent
+            key={step.id}
             step={step}
             onAnswer={setAnswer}
             checked={checked}
