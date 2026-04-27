@@ -699,6 +699,7 @@ function MatchStepComponent({ step, onAnswer, checked }: any) {
 
   // Helper to get styles for definition item
   const getDefStyle = (def: string) => {
+    let opacity;
     const isMatched = Object.values(matched).includes(def);
     const isWrongFlash = wrongPair?.def === def;
     let bg = T.surface;
