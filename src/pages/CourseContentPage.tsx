@@ -17,28 +17,128 @@ import type { CourseStep } from "../types/course";
 
 // ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
 const T = {
-  bg: "#F1EFE8",
-  surface: "#ffffff",
-  surface2: "#F1EFE8",
-  border: "#D3D1C7",
-  primary: "#185FA5",
-  primaryLight: "#E6F1FB",
-  primaryDark: "#0C447C",
-  success: "#639922",
-  successBg: "#EAF3DE",
-  successText: "#3B6D11",
-  danger: "#E24B4A",
-  dangerBg: "#FCEBEB",
-  dangerText: "#A32D2D",
-  amber: "#BA7517",
-  amberBg: "#FAEEDA",
-  text: "#2C2C2A",
-  textBody: "#444441",
-  muted: "#888780",
+  // Base surfaces
+  bg: "#0A0A0F",
+  surface: "#111118",
+  surface2: "#16161F",
+  surface3: "#1C1C27",
+  surfaceHover: "#1F1F2C",
+
+  // Borders
+  border: "#2A2A3A",
+  borderLight: "#333344",
+  borderFocus: "#6366F1",
+
+  // Primary — electric indigo
+  primary: "#6366F1",
+  primaryLight: "rgba(99,102,241,0.12)",
+  primaryMid: "rgba(99,102,241,0.25)",
+  primaryDark: "#4F52C8",
+  primaryGlow: "rgba(99,102,241,0.35)",
+
+  // States
+  success: "#22C55E",
+  successBg: "rgba(34,197,94,0.1)",
+  successBorder: "rgba(34,197,94,0.35)",
+  successText: "#4ADE80",
+  danger: "#F87171",
+  dangerBg: "rgba(248,113,113,0.1)",
+  dangerBorder: "rgba(248,113,113,0.35)",
+  dangerText: "#FCA5A5",
+  amber: "#F59E0B",
+  amberBg: "rgba(245,158,11,0.1)",
+  amberText: "#FCD34D",
+
+  // Text
+  text: "#F0F0F8",
+  textBody: "#A8A8C0",
+  textMuted: "#5A5A72",
+
+  // Fonts
   fontSans: "'DM Sans', 'Inter', sans-serif",
-  fontSerif: "'Literata', 'Lora', serif",
-  fontMono: "'JetBrains Mono', 'DM Mono', monospace",
+  fontSerif: "'Playfair Display', 'Georgia', serif",
+  fontMono: "'JetBrains Mono', 'Fira Code', monospace",
 };
+
+// ─── GLOBAL STYLES ────────────────────────────────────────────────────────────
+const globalStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+  }
+  @keyframes popIn {
+    0%   { transform: scale(0.92); opacity: 0; }
+    60%  { transform: scale(1.03); }
+    100% { transform: scale(1);    opacity: 1; }
+  }
+  @keyframes trophy {
+    0%   { transform: scale(0.5) rotate(-15deg); opacity: 0; }
+    60%  { transform: scale(1.15) rotate(5deg); }
+    80%  { transform: scale(0.95) rotate(-2deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .course-option-btn {
+    transition: transform 120ms ease, border-color 150ms ease, background 150ms ease !important;
+  }
+  .course-option-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+  .course-option-btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.99);
+  }
+
+  .course-input:focus {
+    outline: none;
+    border-color: ${T.primary} !important;
+    box-shadow: 0 0 0 3px ${T.primaryGlow};
+  }
+
+  .course-primary-btn:hover:not(:disabled) {
+    background: ${T.primaryDark} !important;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px ${T.primaryGlow};
+  }
+  .course-primary-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .word-chip:hover:not(:disabled) {
+    border-color: ${T.primary} !important;
+    background: ${T.primaryLight} !important;
+    color: ${T.primary} !important;
+    transform: translateY(-1px);
+  }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: ${T.borderLight}; }
+`;
+
+function GlobalStyles() {
+  return <style dangerouslySetInnerHTML={{ __html: globalStyles }} />;
+}
 
 // ─── COURSE STORE ─────────────────────────────────────────────────────────────
 const CourseStoreCtx = createContext<any>(null);
@@ -69,7 +169,6 @@ interface CourseStoreType {
 
 function CourseStoreProvider({ children, courseId, steps }: any) {
   const initialProgress = getProgress(courseId);
-
   const [stepIdx, setStepIdx] = useState(initialProgress.currentStepIndex);
   const [answer, setAnswer] = useState(null);
   const [checked, setChecked] = useState(false);
@@ -176,31 +275,28 @@ function validate(step: CourseStep, answer: any): boolean {
 }
 
 // ─── STYLE HELPERS ────────────────────────────────────────────────────────────
-function optionStyle(
-  state: string,
-): { background: string; border: string } {
+function optionStyle(state: string): React.CSSProperties {
   if (state === "correct")
-    return { background: T.successBg, border: `2px solid ${T.success}` };
+    return {
+      background: T.successBg,
+      border: `1.5px solid ${T.successBorder}`,
+      boxShadow: `0 0 16px rgba(34,197,94,0.12)`,
+    };
   if (state === "wrong")
-    return { background: T.dangerBg, border: `2px solid ${T.danger}` };
+    return {
+      background: T.dangerBg,
+      border: `1.5px solid ${T.dangerBorder}`,
+      boxShadow: `0 0 16px rgba(248,113,113,0.12)`,
+    };
   if (state === "selected")
-    return { background: T.primaryLight, border: `2px solid ${T.primary}` };
-  return { background: T.surface, border: `2px solid ${T.border}` };
-}
-
-function xpBadgeStyle(): React.CSSProperties {
+    return {
+      background: T.primaryLight,
+      border: `1.5px solid ${T.primary}`,
+      boxShadow: `0 0 16px ${T.primaryGlow}`,
+    };
   return {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    background: T.successBg,
-    border: `1px solid ${T.success}44`,
-    borderRadius: 9999,
-    padding: "5px 14px",
-    fontSize: 12,
-    fontWeight: 500,
-    color: T.successText,
-    width: "fit-content",
+    background: T.surface2,
+    border: `1.5px solid ${T.border}`,
   };
 }
 
@@ -213,26 +309,28 @@ function OptionLabel({ char, state }: any) {
         ? T.danger
         : state === "selected"
           ? T.primary
-          : T.surface2;
+          : T.surface3;
   const color =
     state === "correct" || state === "wrong" || state === "selected"
       ? "#fff"
-      : T.muted;
+      : T.textMuted;
   return (
     <span
       style={{
-        minWidth: 28,
-        height: 28,
+        minWidth: 26,
+        height: 26,
         background: bg,
         borderRadius: 6,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: 12,
-        fontWeight: 500,
+        fontSize: 11,
+        fontWeight: 600,
         color,
         flexShrink: 0,
-        transition: "background .15s, color .15s",
+        fontFamily: T.fontMono,
+        letterSpacing: "0.02em",
+        transition: "background .2s, color .2s",
       }}
     >
       {char}
@@ -240,19 +338,30 @@ function OptionLabel({ char, state }: any) {
   );
 }
 
-function StepLabel({ text, icon }: any) {
+function StepBadge({ text, icon }: any) {
   return (
     <div
-      style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        background: T.primaryLight,
+        border: `1px solid ${T.primaryMid}`,
+        borderRadius: 9999,
+        padding: "4px 12px",
+        marginBottom: 8,
+        width: "fit-content",
+      }}
     >
-      {icon && <span style={{ fontSize: 14 }}>{icon}</span>}
+      <span style={{ fontSize: 12 }}>{icon}</span>
       <span
         style={{
-          fontSize: 11,
-          fontWeight: 500,
-          letterSpacing: "0.08em",
+          fontSize: 10,
+          fontWeight: 600,
+          letterSpacing: "0.1em",
           color: T.primary,
           textTransform: "uppercase",
+          fontFamily: T.fontSans,
         }}
       >
         {text}
@@ -266,15 +375,46 @@ function QuestionText({ children }: any) {
     <p
       style={{
         fontFamily: T.fontSerif,
-        fontSize: 19,
+        fontSize: 21,
         fontWeight: 500,
-        lineHeight: 1.45,
+        lineHeight: 1.5,
         color: T.text,
-        marginBottom: 20,
+        marginBottom: 24,
+        letterSpacing: "-0.01em",
       }}
     >
       {children}
     </p>
+  );
+}
+
+function XpBadge({ xp }: any) {
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        background: "rgba(245,158,11,0.08)",
+        border: "1px solid rgba(245,158,11,0.25)",
+        borderRadius: 9999,
+        padding: "6px 14px",
+        width: "fit-content",
+        marginTop: 4,
+      }}
+    >
+      <span style={{ fontSize: 14 }}>⚡</span>
+      <span
+        style={{
+          fontSize: 12,
+          fontWeight: 600,
+          color: T.amberText,
+          fontFamily: T.fontSans,
+        }}
+      >
+        +{xp} XP earned
+      </span>
+    </div>
   );
 }
 
@@ -283,45 +423,59 @@ function LessonStep({ step, onReady }: any) {
   useEffect(() => {
     onReady(true);
   }, [onReady, step.id]);
-
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        animation: "slideIn 0.35s ease",
+        gap: 20,
+        animation: "slideIn 0.4s ease",
       }}
     >
-      <StepLabel text="Lesson" icon="📖" />
-      {step.icon && <div style={{ fontSize: 36 }}>{step.icon}</div>}
+      <StepBadge text="Lesson" icon="📖" />
+      {step.icon && (
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            background: T.surface3,
+            borderRadius: 16,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 28,
+            border: `1px solid ${T.border}`,
+          }}
+        >
+          {step.icon}
+        </div>
+      )}
       <h2
         style={{
           fontFamily: T.fontSerif,
-          fontSize: 22,
-          fontWeight: 500,
+          fontSize: 26,
+          fontWeight: 600,
           color: T.text,
           lineHeight: 1.3,
+          letterSpacing: "-0.02em",
         }}
       >
         {step.title}
       </h2>
       <div
         style={{
-          background: T.surface,
+          background: T.surface2,
           border: `1px solid ${T.border}`,
-          borderRadius: 12,
-          padding: "18px 20px",
+          borderRadius: 16,
+          padding: "22px 24px",
           fontFamily: T.fontSerif,
-          fontSize: 15,
-          lineHeight: 1.75,
+          fontSize: 15.5,
+          lineHeight: 1.85,
           color: T.textBody,
         }}
         dangerouslySetInnerHTML={{ __html: step.content }}
       />
-      {step.xp ? (
-        <span style={xpBadgeStyle()}>⚡ +{step.xp} XP for reading</span>
-      ) : null}
+      {step.xp ? <XpBadge xp={step.xp} /> : null}
     </div>
   );
 }
@@ -330,24 +484,24 @@ function CodeLessonStep({ step, onReady }: any) {
   useEffect(() => {
     onReady(true);
   }, [onReady, step.id]);
-
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        animation: "slideIn 0.35s ease",
+        gap: 20,
+        animation: "slideIn 0.4s ease",
       }}
     >
-      <StepLabel text="Code Lesson" icon="💻" />
+      <StepBadge text="Code Lesson" icon="💻" />
       <h2
         style={{
           fontFamily: T.fontSerif,
-          fontSize: 22,
-          fontWeight: 500,
+          fontSize: 26,
+          fontWeight: 600,
           color: T.text,
           lineHeight: 1.3,
+          letterSpacing: "-0.02em",
         }}
       >
         {step.title}
@@ -355,61 +509,71 @@ function CodeLessonStep({ step, onReady }: any) {
       <p
         style={{
           fontFamily: T.fontSerif,
-          fontSize: 15,
+          fontSize: 15.5,
           color: T.textBody,
-          lineHeight: 1.7,
+          lineHeight: 1.8,
         }}
       >
         {step.content}
       </p>
-
-      {/* Dark code block per design spec */}
       <div
         style={{
-          background: "#1e1e2e",
-          border: "1px solid #2e2e3e",
-          borderRadius: 10,
+          background: "#0D0D14",
+          border: `1px solid #252535`,
+          borderRadius: 14,
           overflow: "hidden",
-          margin: "4px 0",
         }}
       >
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            padding: "8px 16px",
-            background: "#16161e",
-            borderBottom: "1px solid #2e2e3e",
+            justifyContent: "space-between",
+            padding: "10px 18px",
+            background: "#0A0A10",
+            borderBottom: "1px solid #252535",
           }}
         >
+          <div style={{ display: "flex", gap: 6 }}>
+            {["#FF5F57", "#FFBD2E", "#28C941"].map((c, i) => (
+              <div
+                key={i}
+                style={{
+                  width: 11,
+                  height: 11,
+                  borderRadius: "50%",
+                  background: c,
+                  opacity: 0.8,
+                }}
+              />
+            ))}
+          </div>
           <span
             style={{
               fontFamily: T.fontMono,
-              fontSize: 11,
-              color: "#7c7c9a",
-              letterSpacing: "0.04em",
+              fontSize: 10.5,
+              color: "#4A4A6A",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
             }}
           >
             typescript
           </span>
         </div>
-        <pre style={{ margin: 0, padding: "18px 20px", overflowX: "auto" }}>
+        <pre style={{ margin: 0, padding: "20px 22px", overflowX: "auto" }}>
           <code
             style={{
               fontFamily: T.fontMono,
               fontSize: 13,
-              lineHeight: 1.7,
-              color: "#cdd6f4",
+              lineHeight: 1.8,
+              color: "#C8C8F4",
             }}
           >
             {step.codeSnippet}
           </code>
         </pre>
       </div>
-
-      {step.xp ? (
-        <span style={xpBadgeStyle()}>⚡ +{step.xp} XP for reading</span>
-      ) : null}
+      {step.xp ? <XpBadge xp={step.xp} /> : null}
     </div>
   );
 }
@@ -423,7 +587,6 @@ function QuizStepComponent({ step, onAnswer, checked }: any) {
     setSel(null);
     onAnswer(null);
   }, [step.id, onAnswer]);
-
   useEffect(() => {
     if (sel !== null) onAnswer(sel);
   }, [sel, onAnswer]);
@@ -433,11 +596,11 @@ function QuizStepComponent({ step, onAnswer, checked }: any) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        animation: "slideIn 0.35s ease",
+        gap: 20,
+        animation: "slideIn 0.4s ease",
       }}
     >
-      <StepLabel
+      <StepBadge
         text={isCode ? "Code Challenge" : "Quiz"}
         icon={isCode ? "💻" : "🧠"}
       />
@@ -457,28 +620,51 @@ function QuizStepComponent({ step, onAnswer, checked }: any) {
             <button
               key={i}
               type="button"
-              className={isCode ? "option-btn code" : "option-btn"}
+              className="course-option-btn"
               disabled={checked}
               onClick={() => setSel(i)}
               style={{
                 width: "100%",
                 ...os,
-                borderRadius: 12,
-                padding: "14px 16px",
+                borderRadius: 14,
+                padding: isCode ? "14px 16px" : "16px 18px",
                 color: T.text,
                 fontFamily: isCode ? T.fontMono : T.fontSans,
-                fontSize: isCode ? 12 : 14,
+                fontSize: isCode ? 12.5 : 14.5,
                 fontWeight: isCode ? 400 : 500,
                 cursor: checked ? "default" : "pointer",
                 textAlign: "left",
-                transition: "border-color .15s, background .15s",
                 display: "flex",
                 alignItems: "flex-start",
-                gap: 12,
+                gap: 14,
               }}
             >
               <OptionLabel char={labels[i]} state={state} />
-              <span style={{ flex: 1 }}>{opt}</span>
+              <span style={{ flex: 1, lineHeight: 1.5 }}>{opt}</span>
+              {state === "correct" && (
+                <span
+                  style={{
+                    color: T.success,
+                    fontSize: 16,
+                    marginLeft: "auto",
+                    flexShrink: 0,
+                  }}
+                >
+                  ✓
+                </span>
+              )}
+              {state === "wrong" && (
+                <span
+                  style={{
+                    color: T.danger,
+                    fontSize: 16,
+                    marginLeft: "auto",
+                    flexShrink: 0,
+                  }}
+                >
+                  ✗
+                </span>
+              )}
             </button>
           );
         })}
@@ -494,14 +680,25 @@ function TrueFalseStepComponent({ step, onAnswer, checked }: any) {
     setSel(null);
     onAnswer(null);
   }, [step.id, onAnswer]);
-
   useEffect(() => {
     if (sel !== null) onAnswer(sel);
   }, [sel, onAnswer]);
 
   const opts = [
-    { val: true, label: "True", icon: "✓" },
-    { val: false, label: "False", icon: "✗" },
+    {
+      val: true,
+      label: "True",
+      icon: "✓",
+      color: T.success,
+      dimColor: "rgba(34,197,94,0.15)",
+    },
+    {
+      val: false,
+      label: "False",
+      icon: "✗",
+      color: T.danger,
+      dimColor: "rgba(248,113,113,0.15)",
+    },
   ];
 
   return (
@@ -509,13 +706,13 @@ function TrueFalseStepComponent({ step, onAnswer, checked }: any) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        animation: "slideIn 0.35s ease",
+        gap: 20,
+        animation: "slideIn 0.4s ease",
       }}
     >
-      <StepLabel text="True or False" icon="⚖️" />
+      <StepBadge text="True or False" icon="⚖️" />
       <QuestionText>{step.question}</QuestionText>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         {opts.map((o) => {
           const state =
             checked && o.val === step.correct
@@ -526,31 +723,65 @@ function TrueFalseStepComponent({ step, onAnswer, checked }: any) {
                   ? "selected"
                   : "idle";
           const os = optionStyle(state);
+          const isActive = state !== "idle";
           return (
             <button
               key={String(o.val)}
               type="button"
+              className="course-option-btn"
               disabled={checked}
               onClick={() => setSel(o.val)}
               style={{
                 ...os,
-                borderRadius: 12,
-                padding: "20px 12px",
-                color: T.text,
-                fontFamily: T.fontSans,
-                fontSize: 15,
-                fontWeight: 500,
+                borderRadius: 16,
+                padding: "28px 16px",
                 cursor: checked ? "default" : "pointer",
                 textAlign: "center",
-                transition: "border-color .15s, background .15s",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: 8,
+                gap: 12,
               }}
             >
-              <span style={{ fontSize: 32 }}>{o.icon}</span>
-              {o.label}
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: "50%",
+                  background: isActive ? "transparent" : T.surface3,
+                  border: `1.5px solid ${isActive ? "transparent" : T.border}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 22,
+                  color:
+                    state === "correct"
+                      ? T.success
+                      : state === "wrong"
+                        ? T.danger
+                        : T.textMuted,
+                }}
+              >
+                {o.icon}
+              </div>
+              <span
+                style={{
+                  fontFamily: T.fontSans,
+                  fontSize: 15,
+                  fontWeight: 600,
+                  color:
+                    state === "correct"
+                      ? T.successText
+                      : state === "wrong"
+                        ? T.dangerText
+                        : state === "selected"
+                          ? T.primary
+                          : T.text,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {o.label}
+              </span>
             </button>
           );
         })}
@@ -600,15 +831,12 @@ function FillCodeStepComponent({ step, onAnswer, checked }: any) {
 
   const renderCode = () => {
     const elements: React.ReactNode[] = [];
-
     step.codeTemplate.forEach((part: string, idx: number) => {
       const hasBlank = blankIndices.includes(idx);
       const blankIdx = blankIndices.indexOf(idx);
-
       const lines = part.split("\n");
       lines.forEach((line: string, lineIdx: number) => {
         if (lineIdx > 0) elements.push(<br key={`br-${idx}-${lineIdx}`} />);
-
         if (hasBlank && line.includes("______")) {
           const [beforeBlank, afterBlank] = line.split("______");
           const isCorrect =
@@ -622,7 +850,7 @@ function FillCodeStepComponent({ step, onAnswer, checked }: any) {
                 onClick={() => fills[blankIdx] && clear(blankIdx)}
                 style={{
                   display: "inline-block",
-                  minWidth: 72,
+                  minWidth: 80,
                   borderBottom: `2px solid`,
                   borderColor: checked
                     ? isCorrect
@@ -637,16 +865,23 @@ function FillCodeStepComponent({ step, onAnswer, checked }: any) {
                         ? T.success
                         : T.danger
                       : T.primary
-                    : T.muted,
-                  fontWeight: 500,
+                    : T.textMuted,
+                  fontWeight: 600,
                   textAlign: "center",
-                  padding: "0 4px",
+                  padding: "0 6px",
                   cursor: fills[blankIdx] ? "pointer" : "default",
                   borderRadius: 2,
-                  transition: "border-color .2s",
+                  transition: "border-color .2s, color .2s",
+                  background: fills[blankIdx]
+                    ? checked
+                      ? isCorrect
+                        ? T.successBg
+                        : T.dangerBg
+                      : T.primaryLight
+                    : "transparent",
                 }}
               >
-                {fills[blankIdx] || (active === blankIdx ? "▌" : "______")}
+                {fills[blankIdx] || (active === blankIdx ? "▌" : "　　")}
               </span>
               <span>{afterBlank}</span>
             </span>,
@@ -664,35 +899,51 @@ function FillCodeStepComponent({ step, onAnswer, checked }: any) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        animation: "slideIn 0.35s ease",
+        gap: 20,
+        animation: "slideIn 0.4s ease",
       }}
     >
-      <StepLabel text="Fill in the Code" icon="✏️" />
+      <StepBadge text="Fill in the Code" icon="✏️" />
       <QuestionText>{step.question}</QuestionText>
-
-      {/* Dark code block */}
       <div
         style={{
-          background: "#1e1e2e",
-          border: "1px solid #2e2e3e",
-          borderRadius: 10,
+          background: "#0D0D14",
+          border: `1px solid #252535`,
+          borderRadius: 14,
           overflow: "hidden",
         }}
       >
         <div
           style={{
-            padding: "8px 16px",
-            background: "#16161e",
-            borderBottom: "1px solid #2e2e3e",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "10px 18px",
+            background: "#0A0A10",
+            borderBottom: "1px solid #252535",
           }}
         >
+          <div style={{ display: "flex", gap: 6 }}>
+            {["#FF5F57", "#FFBD2E", "#28C941"].map((c, i) => (
+              <div
+                key={i}
+                style={{
+                  width: 11,
+                  height: 11,
+                  borderRadius: "50%",
+                  background: c,
+                  opacity: 0.8,
+                }}
+              />
+            ))}
+          </div>
           <span
             style={{
               fontFamily: T.fontMono,
-              fontSize: 11,
-              color: "#7c7c9a",
-              letterSpacing: "0.04em",
+              fontSize: 10.5,
+              color: "#4A4A6A",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
             }}
           >
             fill in the blanks
@@ -701,11 +952,11 @@ function FillCodeStepComponent({ step, onAnswer, checked }: any) {
         <pre
           style={{
             margin: 0,
-            padding: "18px 20px",
+            padding: "20px 22px",
             fontFamily: T.fontMono,
             fontSize: 13,
-            lineHeight: 1.9,
-            color: "#cdd6f4",
+            lineHeight: 2,
+            color: "#C8C8F4",
             overflowX: "auto",
             whiteSpace: "pre-wrap",
           }}
@@ -713,38 +964,39 @@ function FillCodeStepComponent({ step, onAnswer, checked }: any) {
           {renderCode()}
         </pre>
       </div>
-
-      {/* Word bank */}
       <div>
         <p
           style={{
-            fontSize: 12,
-            color: T.muted,
-            marginBottom: 8,
+            fontSize: 11.5,
+            color: T.textMuted,
+            marginBottom: 10,
             fontFamily: T.fontSans,
+            letterSpacing: "0.02em",
           }}
         >
-          Word bank — tap to fill, tap blank to clear:
+          Tap a word to place it · Tap a filled blank to clear it
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {step.wordBank.map((w: string, wi: number) => (
             <button
               key={wi}
               type="button"
+              className="word-chip"
               disabled={used.includes(wi) || checked}
               onClick={() => pick(w, wi)}
               style={{
-                background: used.includes(wi) ? T.surface2 : T.surface,
-                border: `2px solid ${T.border}`,
+                background: used.includes(wi) ? T.surface3 : T.surface2,
+                border: `1.5px solid ${T.border}`,
                 borderRadius: 9999,
-                padding: "6px 14px",
+                padding: "7px 16px",
                 fontFamily: T.fontMono,
-                fontSize: 12,
+                fontSize: 12.5,
                 fontWeight: 500,
-                color: T.text,
+                color: used.includes(wi) ? T.textMuted : T.textBody,
                 cursor: used.includes(wi) || checked ? "default" : "pointer",
-                transition: "border-color .15s, background .15s",
-                opacity: used.includes(wi) ? 0.3 : 1,
+                transition: "all .15s ease",
+                opacity: used.includes(wi) ? 0.35 : 1,
+                letterSpacing: "0.01em",
               }}
             >
               {w}
@@ -778,8 +1030,7 @@ function MatchStepComponent({ step, onAnswer, checked }: any) {
   const clickDef = (def: string) => {
     if (!selTerm || checked) return;
     const pair = step.pairs.find((p: any) => p.term === selTerm);
-    const ok = pair?.def === def;
-    if (ok) {
+    if (pair?.def === def) {
       setMatched((m: any) => ({ ...m, [selTerm]: def }));
       setSelTerm(null);
     } else {
@@ -797,21 +1048,22 @@ function MatchStepComponent({ step, onAnswer, checked }: any) {
     if (isMatched)
       return {
         background: T.successBg,
-        border: `2px solid ${T.success}`,
+        border: `1.5px solid ${T.successBorder}`,
         color: T.successText,
         cursor: "default",
-        opacity: 0.8,
+        opacity: 0.85,
       };
     if (isActive)
       return {
         background: T.primaryLight,
-        border: `2px solid ${T.primary}`,
+        border: `1.5px solid ${T.primary}`,
         color: T.primary,
         cursor: "pointer",
+        boxShadow: `0 0 16px ${T.primaryGlow}`,
       };
     return {
-      background: T.surface,
-      border: `2px solid ${T.border}`,
+      background: T.surface2,
+      border: `1.5px solid ${T.border}`,
       color: T.text,
       cursor: checked ? "default" : "pointer",
     };
@@ -823,54 +1075,56 @@ function MatchStepComponent({ step, onAnswer, checked }: any) {
     if (isWrongFlash && !checked)
       return {
         background: T.dangerBg,
-        border: `2px solid ${T.danger}`,
+        border: `1.5px solid ${T.dangerBorder}`,
         color: T.dangerText,
         cursor: "default",
       };
     if (isMatched)
       return {
         background: T.successBg,
-        border: `2px solid ${T.success}`,
+        border: `1.5px solid ${T.successBorder}`,
         color: T.successText,
         cursor: "default",
-        opacity: 0.8,
+        opacity: 0.85,
       };
     if (!checked && selTerm && !isMatched)
       return {
         background: T.primaryLight,
-        border: `2px solid ${T.primary}`,
+        border: `1.5px solid ${T.primary}`,
         color: T.primary,
         cursor: "pointer",
       };
     return {
-      background: T.surface,
-      border: `2px solid ${T.border}`,
+      background: T.surface2,
+      border: `1.5px solid ${T.border}`,
       color: T.text,
       cursor: !selTerm || checked ? "default" : "pointer",
     };
   };
 
-  const colLabel = {
+  const colLabel: React.CSSProperties = {
     fontSize: 10,
-    fontWeight: 500,
-    letterSpacing: "0.08em",
-    color: T.muted,
-    textTransform: "uppercase" as const,
-    marginBottom: 8,
-    textAlign: "center" as const,
+    fontWeight: 600,
+    letterSpacing: "0.1em",
+    color: T.textMuted,
+    textTransform: "uppercase",
+    marginBottom: 10,
+    textAlign: "center",
+    fontFamily: T.fontSans,
   };
 
   const itemBase: React.CSSProperties = {
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 13,
+    borderRadius: 10,
+    padding: "12px 10px",
+    fontSize: 12.5,
     fontWeight: 500,
     textAlign: "center",
-    transition: "border-color .15s, background .15s",
-    minHeight: 52,
+    transition: "all .2s ease",
+    minHeight: 54,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    fontFamily: T.fontSans,
   };
 
   return (
@@ -878,13 +1132,13 @@ function MatchStepComponent({ step, onAnswer, checked }: any) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        animation: "slideIn 0.35s ease",
+        gap: 20,
+        animation: "slideIn 0.4s ease",
       }}
     >
-      <StepLabel text="Match" icon="🔗" />
+      <StepBadge text="Match" icon="🔗" />
       <QuestionText>{step.question}</QuestionText>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <div>
           <p style={colLabel}>Method</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -922,9 +1176,12 @@ function MatchStepComponent({ step, onAnswer, checked }: any) {
             fontSize: 12,
             color: T.primary,
             textAlign: "center",
+            fontFamily: T.fontSans,
+            animation: "fadeIn 0.2s ease",
           }}
         >
-          Now tap a meaning for <strong>{selTerm}</strong>
+          Now tap a meaning for{" "}
+          <strong style={{ fontWeight: 600 }}>{selTerm}</strong>
         </p>
       )}
     </div>
@@ -959,14 +1216,14 @@ function ReorderStepComponent({ step, onAnswer, checked }: any) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        animation: "slideIn 0.35s ease",
+        gap: 20,
+        animation: "slideIn 0.4s ease",
       }}
     >
-      <StepLabel text="Reorder" icon="↕️" />
+      <StepBadge text="Reorder" icon="↕️" />
       <QuestionText>{step.question}</QuestionText>
-      <p style={{ fontSize: 12, color: T.muted, fontFamily: T.fontSans }}>
-        Use the arrows to rearrange:
+      <p style={{ fontSize: 12, color: T.textMuted, fontFamily: T.fontSans }}>
+        Use arrows to rearrange into the correct order
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {items.map((item: any, idx: number) => {
@@ -980,37 +1237,50 @@ function ReorderStepComponent({ step, onAnswer, checked }: any) {
                   ? T.successBg
                   : isWrong
                     ? T.dangerBg
-                    : T.surface,
-                border: `2px solid ${isCorrect ? T.success : isWrong ? T.danger : T.border}`,
-                borderRadius: 8,
-                padding: "12px 14px",
+                    : T.surface2,
+                border: `1.5px solid ${isCorrect ? T.successBorder : isWrong ? T.dangerBorder : T.border}`,
+                borderRadius: 12,
+                padding: "14px 16px",
                 fontFamily: T.fontMono,
-                fontSize: 12,
+                fontSize: 12.5,
                 display: "flex",
                 alignItems: "center",
-                gap: 10,
-                transition: "border-color .2s, background .2s",
+                gap: 12,
+                transition: "all .2s ease",
+                boxShadow: isCorrect
+                  ? `0 0 12px rgba(34,197,94,0.1)`
+                  : isWrong
+                    ? `0 0 12px rgba(248,113,113,0.1)`
+                    : "none",
               }}
             >
               <span
                 style={{
-                  minWidth: 24,
-                  height: 24,
-                  background: T.surface2,
-                  borderRadius: 4,
+                  minWidth: 26,
+                  height: 26,
+                  background: T.surface3,
+                  borderRadius: 6,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: 11,
-                  fontWeight: 500,
-                  color: T.muted,
+                  fontWeight: 600,
+                  color: T.textMuted,
                   fontFamily: T.fontSans,
                   flexShrink: 0,
+                  border: `1px solid ${T.border}`,
                 }}
               >
                 {idx + 1}
               </span>
-              <span style={{ flex: 1, color: T.text, fontSize: 12 }}>
+              <span
+                style={{
+                  flex: 1,
+                  color: T.text,
+                  fontSize: 12.5,
+                  lineHeight: 1.5,
+                }}
+              >
                 {item.text}
               </span>
               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -1028,16 +1298,25 @@ function ReorderStepComponent({ step, onAnswer, checked }: any) {
                     style={{
                       background: "none",
                       border: "none",
-                      color: T.muted,
+                      color: T.textMuted,
                       cursor: checked ? "default" : "pointer",
-                      fontSize: 13,
-                      padding: "2px 4px",
+                      fontSize: 11,
+                      padding: "3px 6px",
                       lineHeight: 1,
+                      borderRadius: 4,
                       opacity:
                         (d === -1 && idx === 0) ||
                         (d === 1 && idx === items.length - 1)
-                          ? 0.25
-                          : 1,
+                          ? 0.2
+                          : 0.7,
+                      transition: "opacity .15s, background .15s",
+                    }}
+                    onMouseOver={(e) => {
+                      if (!checked)
+                        e.currentTarget.style.background = T.surface3;
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = "none";
                     }}
                   >
                     {lbl}
@@ -1060,7 +1339,6 @@ function ShortAnswerStepComponent({ step, onAnswer, checked }: any) {
     setVal("");
     onAnswer(null);
   }, [step.id, onAnswer]);
-
   useEffect(() => {
     onAnswer(val.trim() || null);
   }, [val, onAnswer]);
@@ -1073,27 +1351,41 @@ function ShortAnswerStepComponent({ step, onAnswer, checked }: any) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        animation: "slideIn 0.35s ease",
+        gap: 20,
+        animation: "slideIn 0.4s ease",
       }}
     >
-      <StepLabel text="Short Answer" icon="⌨️" />
+      <StepBadge text="Short Answer" icon="⌨️" />
       <QuestionText>{step.question}</QuestionText>
       {step.hint && (
-        <p
+        <div
           style={{
-            fontSize: 13,
-            color: T.muted,
-            fontStyle: "italic",
-            fontFamily: T.fontMono,
+            background: T.surface2,
+            border: `1px solid ${T.border}`,
+            borderRadius: 10,
+            padding: "10px 14px",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
           }}
         >
-          {step.hint}
-        </p>
+          <span style={{ color: T.amber, fontSize: 14 }}>💡</span>
+          <p
+            style={{
+              fontSize: 13,
+              color: T.textBody,
+              fontStyle: "italic",
+              fontFamily: T.fontMono,
+            }}
+          >
+            {step.hint}
+          </p>
+        </div>
       )}
       <input
+        className="course-input"
         value={val}
-        placeholder={step.placeholder || "Type your answer..."}
+        placeholder={step.placeholder || "Type your answer here..."}
         disabled={checked}
         onChange={(e) => setVal(e.target.value)}
         onFocus={() => setFocused(true)}
@@ -1103,23 +1395,27 @@ function ShortAnswerStepComponent({ step, onAnswer, checked }: any) {
         }
         style={{
           width: "100%",
-          background: isCorrect ? T.successBg : isWrong ? T.dangerBg : T.surface,
-          border: `2px solid ${
-            isCorrect
-              ? T.success
-              : isWrong
-                ? T.danger
-                : focused
-                  ? T.primary
-                  : T.border
-          }`,
-          borderRadius: 12,
-          padding: "14px 16px",
+          background: isCorrect
+            ? T.successBg
+            : isWrong
+              ? T.dangerBg
+              : T.surface2,
+          border: `1.5px solid ${isCorrect ? T.successBorder : isWrong ? T.dangerBorder : focused ? T.primary : T.border}`,
+          borderRadius: 14,
+          padding: "16px 18px",
           color: T.text,
           fontFamily: T.fontSans,
-          fontSize: 15,
+          fontSize: 15.5,
           outline: "none",
-          transition: "border-color .15s, background .15s",
+          transition: "all .2s ease",
+          boxShadow:
+            focused && !checked
+              ? `0 0 0 3px ${T.primaryGlow}`
+              : isCorrect
+                ? `0 0 12px rgba(34,197,94,0.15)`
+                : isWrong
+                  ? `0 0 12px rgba(248,113,113,0.15)`
+                  : "none",
         }}
       />
     </div>
@@ -1132,8 +1428,8 @@ function ProgressBar({ value }: any) {
     <div
       style={{
         flex: 1,
-        height: 6,
-        background: T.surface2,
+        height: 4,
+        background: T.surface3,
         borderRadius: 9999,
         overflow: "hidden",
       }}
@@ -1141,10 +1437,11 @@ function ProgressBar({ value }: any) {
       <div
         style={{
           height: "100%",
-          background: T.primary,
+          background: `linear-gradient(90deg, ${T.primary}, #818CF8)`,
           borderRadius: 9999,
           width: `${value}%`,
-          transition: "width 300ms ease-out",
+          transition: "width 400ms cubic-bezier(.4,0,.2,1)",
+          boxShadow: `0 0 8px ${T.primaryGlow}`,
         }}
       />
     </div>
@@ -1160,34 +1457,54 @@ function TopBar({ onClose }: any) {
         position: "sticky",
         top: 0,
         zIndex: 100,
-        background: T.surface,
+        background: `${T.surface}EE`,
+        backdropFilter: "blur(12px)",
         borderBottom: `1px solid ${T.border}`,
-        padding: "12px 16px",
+        padding: "14px 20px",
         display: "flex",
         alignItems: "center",
-        gap: 12,
+        gap: 16,
       }}
     >
       <button
         type="button"
         onClick={onClose}
         style={{
-          background: "none",
-          border: "none",
-          color: T.muted,
+          background: T.surface2,
+          border: `1px solid ${T.border}`,
+          color: T.textMuted,
           cursor: "pointer",
-          fontSize: 20,
-          padding: "4px 6px",
-          borderRadius: 6,
+          fontSize: 13,
+          padding: "6px 10px",
+          borderRadius: 8,
           lineHeight: 1,
-          transition: "color 150ms ease-in-out",
+          transition: "all .15s ease",
+          fontFamily: T.fontSans,
+          flexShrink: 0,
         }}
-        onMouseOver={(e) => (e.currentTarget.style.color = T.text)}
-        onMouseOut={(e) => (e.currentTarget.style.color = T.muted)}
+        onMouseOver={(e) => {
+          e.currentTarget.style.color = T.text;
+          e.currentTarget.style.borderColor = T.borderLight;
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.color = T.textMuted;
+          e.currentTarget.style.borderColor = T.border;
+        }}
       >
         ✕
       </button>
       <ProgressBar value={progress} />
+      <span
+        style={{
+          fontFamily: T.fontMono,
+          fontSize: 11,
+          color: T.textMuted,
+          flexShrink: 0,
+          letterSpacing: "0.04em",
+        }}
+      >
+        {stepIdx}/{totalSteps}
+      </span>
     </div>
   );
 }
@@ -1196,47 +1513,86 @@ function FeedbackBanner({ result, explanation }: any) {
   return (
     <div
       style={{
-        borderRadius: 12,
-        padding: "14px 16px",
+        borderRadius: 14,
+        padding: "16px 18px",
         display: "flex",
         alignItems: "flex-start",
-        gap: 12,
+        gap: 14,
         background: result ? T.successBg : T.dangerBg,
-        border: `1px solid ${result ? T.success : T.danger}`,
+        border: `1px solid ${result ? T.successBorder : T.dangerBorder}`,
         animation: "slideUp 0.35s cubic-bezier(.4,0,.2,1) both",
+        boxShadow: result
+          ? `0 0 24px rgba(34,197,94,0.1)`
+          : `0 0 24px rgba(248,113,113,0.1)`,
       }}
     >
-      <span
+      <div
         style={{
-          fontSize: 20,
+          width: 32,
+          height: 32,
+          borderRadius: 9999,
+          background: result ? "rgba(34,197,94,0.2)" : "rgba(248,113,113,0.2)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           flexShrink: 0,
-          marginTop: 1,
+          fontSize: 16,
           color: result ? T.success : T.danger,
         }}
       >
         {result ? "✓" : "✗"}
-      </span>
-      <div>
+      </div>
+      <div style={{ flex: 1 }}>
         <p
           style={{
-            fontSize: 15,
-            fontWeight: 500,
+            fontSize: 14,
+            fontWeight: 600,
             color: result ? T.successText : T.dangerText,
-            marginBottom: 4,
+            marginBottom: 6,
+            fontFamily: T.fontSans,
+            letterSpacing: "0.01em",
           }}
         >
-          {result ? "Correct!" : "Not quite!"}
+          {result ? "Correct!" : "Incorrect!"}
         </p>
         <p
           style={{
             fontFamily: T.fontSerif,
-            fontSize: 13,
+            fontSize: 13.5,
             color: T.textBody,
-            lineHeight: 1.6,
+            lineHeight: 1.65,
+            marginBottom: result ? 0 : 10,
           }}
         >
           {explanation}
         </p>
+        {!result && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "rgba(248,113,113,0.08)",
+              border: `1px solid ${T.dangerBorder}`,
+              borderRadius: 8,
+              padding: "8px 12px",
+              marginTop: 2,
+            }}
+          >
+            <span style={{ fontSize: 14, flexShrink: 0 }}>↩</span>
+            <p
+              style={{
+                fontFamily: T.fontSans,
+                fontSize: 12.5,
+                fontWeight: 500,
+                color: T.dangerText,
+                lineHeight: 1.4,
+              }}
+            >
+              You'll restart from the beginning — don't worry, you've got this.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1246,7 +1602,16 @@ function BottomBar({ canCheck, onAction }: any) {
   const { checked, result, stepIdx, totalSteps, step } = useCourseStore();
   const isLast = stepIdx + 1 >= totalSteps;
   const isLessonType = step.type === "lesson" || step.type === "code_lesson";
-  const label = checked ? (isLast ? "Finish" : "Continue →") : "Check";
+  const label =
+    checked && result === false
+      ? "↩ Restart from Beginning"
+      : checked
+        ? isLast
+          ? "Finish Course"
+          : "Continue →"
+        : isLessonType
+          ? "Next →"
+          : "Check Answer";
   const btnBg =
     checked && !isLessonType ? (result ? T.success : T.danger) : T.primary;
 
@@ -1255,9 +1620,10 @@ function BottomBar({ canCheck, onAction }: any) {
       style={{
         position: "sticky",
         bottom: 0,
-        background: T.surface,
+        background: `${T.surface}EE`,
+        backdropFilter: "blur(12px)",
         borderTop: `1px solid ${T.border}`,
-        padding: 16,
+        padding: "16px 20px",
         display: "flex",
         flexDirection: "column",
         gap: 12,
@@ -1268,28 +1634,23 @@ function BottomBar({ canCheck, onAction }: any) {
       )}
       <button
         type="button"
+        className="course-primary-btn"
         disabled={!canCheck}
         onClick={onAction}
         style={{
           width: "100%",
           border: "none",
-          borderRadius: 8,
-          padding: "9px 18px",
+          borderRadius: 12,
+          padding: "14px 20px",
           fontFamily: T.fontSans,
-          fontSize: 14,
-          fontWeight: 500,
+          fontSize: 14.5,
+          fontWeight: 600,
+          letterSpacing: "0.02em",
           cursor: canCheck ? "pointer" : "default",
           background: btnBg,
           color: "#ffffff",
-          opacity: !canCheck ? 0.28 : 1,
-          transition:
-            "background 150ms ease-in-out, opacity 150ms ease-in-out",
-        }}
-        onMouseOver={(e) => {
-          if (canCheck) e.currentTarget.style.opacity = "0.88";
-        }}
-        onMouseOut={(e) => {
-          if (canCheck) e.currentTarget.style.opacity = "1";
+          opacity: !canCheck ? 0.22 : 1,
+          transition: "all .2s ease",
         }}
       >
         {label}
@@ -1299,7 +1660,7 @@ function BottomBar({ canCheck, onAction }: any) {
 }
 
 function CompletionScreen() {
-  const { correctCt, totalSteps } = useCourseStore();
+  const { correctCt, totalSteps, xp } = useCourseStore();
   const navigate = useNavigate();
   const pct = Math.round((correctCt / totalSteps) * 100);
 
@@ -1311,115 +1672,131 @@ function CompletionScreen() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 24,
+        gap: 32,
         padding: "48px 24px",
         textAlign: "center",
-        animation: "slideUp 0.5s ease",
       }}
     >
+      {/* Trophy */}
       <div
         style={{
-          width: 96,
-          height: 96,
-          background: T.successBg,
-          border: `2px solid ${T.success}`,
+          width: 100,
+          height: 100,
+          background: `radial-gradient(circle, rgba(99,102,241,0.2), transparent 70%)`,
           borderRadius: "50%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 44,
+          fontSize: 52,
+          animation: "trophy 0.7s cubic-bezier(.17,.89,.32,1.49) 0.1s both",
         }}
       >
         🏆
       </div>
 
-      <div>
+      <div style={{ animation: "slideUp 0.5s ease 0.2s both" }}>
         <h2
           style={{
             fontFamily: T.fontSerif,
-            fontSize: 22,
-            fontWeight: 500,
+            fontSize: 30,
+            fontWeight: 600,
             color: T.text,
-            marginBottom: 8,
+            marginBottom: 10,
+            letterSpacing: "-0.02em",
           }}
         >
-          Lesson Complete!
+          Course Complete!
         </h2>
         <p
           style={{
             fontFamily: T.fontSerif,
-            fontSize: 15,
+            fontSize: 16,
             color: T.textBody,
-            maxWidth: 320,
-            lineHeight: 1.7,
+            maxWidth: 300,
+            lineHeight: 1.75,
             margin: "0 auto",
           }}
         >
-          Great job! You've finished this course. Now try the next one to keep
-          learning.
+          Excellent work. You've mastered this lesson — keep the momentum going.
         </p>
       </div>
 
+      {/* Stats */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gap: 16,
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 12,
           width: "100%",
-          maxWidth: 320,
+          maxWidth: 340,
+          animation: "slideUp 0.5s ease 0.35s both",
         }}
       >
-        <div
-          style={{
-            padding: 16,
-            background: T.surface,
-            border: `1px solid ${T.border}`,
-            borderRadius: 12,
-          }}
-        >
-          <div style={{ fontSize: 12, color: T.muted, marginBottom: 4 }}>
-            Correct
+        {[
+          {
+            label: "Correct",
+            value: `${correctCt}/${totalSteps}`,
+            color: T.successText,
+          },
+          { label: "Score", value: `${pct}%`, color: T.amberText },
+          { label: "XP", value: `+${xp}`, color: T.primary },
+        ].map(({ label, value, color }) => (
+          <div
+            key={label}
+            style={{
+              padding: "16px 12px",
+              background: T.surface2,
+              border: `1px solid ${T.border}`,
+              borderRadius: 14,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11,
+                color: T.textMuted,
+                fontFamily: T.fontSans,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+              }}
+            >
+              {label}
+            </span>
+            <span
+              style={{
+                fontSize: 22,
+                fontWeight: 600,
+                color,
+                fontFamily: T.fontSans,
+              }}
+            >
+              {value}
+            </span>
           </div>
-          <div style={{ fontSize: 20, fontWeight: 500, color: T.success }}>
-            {correctCt}/{totalSteps}
-          </div>
-        </div>
-        <div
-          style={{
-            padding: 16,
-            background: T.surface,
-            border: `1px solid ${T.border}`,
-            borderRadius: 12,
-          }}
-        >
-          <div style={{ fontSize: 12, color: T.muted, marginBottom: 4 }}>
-            Score
-          </div>
-          <div style={{ fontSize: 20, fontWeight: 500, color: T.amber }}>
-            {pct}%
-          </div>
-        </div>
+        ))}
       </div>
 
       <button
         type="button"
         onClick={() => navigate("/courses")}
+        className="course-primary-btn"
         style={{
-          padding: "9px 18px",
+          padding: "14px 32px",
           background: T.primary,
-          color: "#ffffff",
+          color: "#fff",
           border: "none",
-          borderRadius: 8,
-          fontSize: 14,
-          fontWeight: 500,
+          borderRadius: 12,
+          fontSize: 14.5,
+          fontWeight: 600,
           cursor: "pointer",
-          transition: "background 150ms ease-in-out",
           fontFamily: T.fontSans,
+          letterSpacing: "0.02em",
+          transition: "all .2s ease",
+          animation: "slideUp 0.5s ease 0.5s both",
         }}
-        onMouseOver={(e) =>
-          (e.currentTarget.style.background = T.primaryDark)
-        }
-        onMouseOut={(e) => (e.currentTarget.style.background = T.primary)}
       >
         Explore More Courses
       </button>
@@ -1435,58 +1812,85 @@ export default function CourseContentPage() {
 
   if (!course) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: T.bg,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-          gap: 20,
-          padding: 20,
-          fontFamily: T.fontSans,
-        }}
-      >
-        <div style={{ fontSize: 48 }}>🔍</div>
-        <h1
+      <>
+        <GlobalStyles />
+        <div
           style={{
-            fontFamily: T.fontSerif,
-            fontSize: 22,
-            fontWeight: 500,
-            color: T.text,
-          }}
-        >
-          Course not found
-        </h1>
-        <button
-          type="button"
-          onClick={() => navigate("/courses")}
-          style={{
-            padding: "9px 18px",
-            background: T.primary,
-            color: "#ffffff",
-            border: "none",
-            borderRadius: 8,
-            fontSize: 14,
-            fontWeight: 500,
-            cursor: "pointer",
+            minHeight: "100vh",
+            background: T.bg,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            gap: 24,
+            padding: 20,
             fontFamily: T.fontSans,
           }}
         >
-          Back to Courses
-        </button>
-      </div>
+          <div
+            style={{
+              width: 72,
+              height: 72,
+              background: T.surface2,
+              borderRadius: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 32,
+              border: `1px solid ${T.border}`,
+            }}
+          >
+            🔍
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <h1
+              style={{
+                fontFamily: T.fontSerif,
+                fontSize: 24,
+                fontWeight: 600,
+                color: T.text,
+                marginBottom: 8,
+              }}
+            >
+              Course not found
+            </h1>
+            <p style={{ color: T.textMuted, fontSize: 14 }}>
+              This course doesn't exist or has been removed.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate("/courses")}
+            className="course-primary-btn"
+            style={{
+              padding: "12px 24px",
+              background: T.primary,
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontFamily: T.fontSans,
+            }}
+          >
+            Back to Courses
+          </button>
+        </div>
+      </>
     );
   }
 
   return (
-    <CourseStoreProvider courseId={courseId} steps={course.steps}>
-      <CourseContentInner
-        course={course}
-        onClose={() => navigate("/courses")}
-      />
-    </CourseStoreProvider>
+    <>
+      <GlobalStyles />
+      <CourseStoreProvider courseId={courseId} steps={course.steps}>
+        <CourseContentInner
+          course={course}
+          onClose={() => navigate("/courses")}
+        />
+      </CourseStoreProvider>
+    </>
   );
 }
 
@@ -1512,7 +1916,6 @@ function CourseContentInner({ onClose }: any) {
 
   const handleCheck = useCallback(() => {
     const isLessonType = step.type === "lesson" || step.type === "code_lesson";
-
     if (isLessonType) {
       if (stepIdx + 1 >= totalSteps) {
         saveProgress();
@@ -1522,34 +1925,39 @@ function CourseContentInner({ onClose }: any) {
         setReadyToAdvance(false);
       }
     } else if (checked) {
-      setChecked(false);
-      setAnswer(null);
-      setResult(null);
-
-      if (stepIdx + 1 >= totalSteps) {
-        saveProgress();
-        setDone(true);
-      } else {
-        setStepIdx(stepIdx + 1);
-        setReadyToAdvance(false);
-      }
-    } else {
-      const isCorrect = validate(step, answer);
-      setResult(isCorrect);
-
-      if (!isCorrect) {
+      if (result === false) {
+        // User has seen the failure banner — now reset to beginning
         setStepIdx(0);
         setAnswer(null);
         setChecked(false);
         setResult(null);
         setCorrectCt(0);
+        setReadyToAdvance(false);
       } else {
+        // Correct — advance
+        setChecked(false);
+        setAnswer(null);
+        setResult(null);
+        if (stepIdx + 1 >= totalSteps) {
+          saveProgress();
+          setDone(true);
+        } else {
+          setStepIdx(stepIdx + 1);
+          setReadyToAdvance(false);
+        }
+      }
+    } else {
+      const isCorrect = validate(step, answer);
+      setResult(isCorrect);
+      // Always show the feedback banner (checked=true) regardless of correct/wrong
+      setChecked(true);
+      if (isCorrect) {
         setCorrectCt(correctCt + 1);
-        setChecked(true);
       }
     }
   }, [
     checked,
+    result,
     stepIdx,
     totalSteps,
     answer,
@@ -1582,7 +1990,11 @@ function CourseContentInner({ onClose }: any) {
   }
 
   const isAutoStep = step.type === "lesson" || step.type === "code_lesson";
-  const canCheck = isAutoStep ? readyToAdvance : checked ? true : answer !== null;
+  const canCheck = isAutoStep
+    ? readyToAdvance
+    : checked
+      ? true
+      : answer !== null;
 
   return (
     <div
@@ -1598,8 +2010,8 @@ function CourseContentInner({ onClose }: any) {
       <div
         style={{
           flex: 1,
-          padding: "24px 20px",
-          maxWidth: 800,
+          padding: "28px 20px 16px",
+          maxWidth: 780,
           width: "100%",
           margin: "0 auto",
           display: "flex",
